@@ -1,0 +1,30 @@
+version: '3'
+services:
+  redis-tg:
+    image: redis/redis-stack
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+      - "8001:8001"
+    volumes:
+      - "./redis-data/:/data"
+    # environment:
+      # REDIS_ARGS: "--appendonly yes --appendfsync everysec"
+      # REDIS_PASSWORD: "b7RcPiVoL6"
+    networks:
+      - infr_net
+
+  python-app:
+    build: .
+    restart: always
+    depends_on:
+      - redis-tg
+    environment:
+      - REDIS_HOST=redis-tg
+      - REDIS_PORT=6379
+      # - REDIS_PASSWORD=your_redis_password  # Замените на ваш реальный пароль Redis
+    networks:
+      - infr_net
+
+networks:
+  infr_net:
